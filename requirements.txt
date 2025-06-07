@@ -1,0 +1,10 @@
+streamlit
+streamlit-autorefresh
+yahooquery
+mysql-connector-python
+yfinance
+pandas
+plotly
+sqlalchemy
+python-dotenv
+numpy

@@ -91,7 +91,7 @@ class portfolioDashBoardClass:
             # Optional: display a loading GIF if you have one
             # st.image("path/to/loading.gif", width=100)
 
-        with open("Portfolio_Manager/MyPortfolio1.png", "rb") as f:
+        with open("MyPortfolio1.png", "rb") as f:
             gif_bytes = f.read()
             gif_base64 = base64.b64encode(gif_bytes).decode()
 

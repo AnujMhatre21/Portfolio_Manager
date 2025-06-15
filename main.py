@@ -10,7 +10,7 @@ import plotly.express as px
 from sqlalchemy import create_engine
 from portfolio.stocks.portfolioDashBoard import portfolioDashBoardClass
 from portfolio.stocks.treeMap import treeMap
-
+from portfolio.Advisor.aiadvisor import render_ai_chat
 
 # --- DB Connection ---
 
@@ -34,7 +34,7 @@ st.set_page_config("💰 Financial Planner", layout="wide")
 st.title("💼 One-Stop Financial Planner")
 
 menu = st.sidebar.selectbox(
-    "🔎 Navigate", ["Portfolio", "Overview", "Credit Cards", "Goals", "GPT Advisor"])
+    "🔎 Navigate", ["Portfolio", "Overview", "Credit Cards", "Goals", "AI Advisor"])
 
 if menu == "Portfolio":
 
@@ -113,9 +113,7 @@ elif menu == "Goals":
     st.subheader("🎯 Financial Goals")
     st.info("This feature is under development. Stay tuned!")
 
-elif menu == "GPT Advisor":
-    st.subheader("🤖 GPT Financial Advisor")
-    st.info("This feature is under development. Stay tuned!")
-    # Add your GPT integration here
-    # For example, you can use OpenAI's API to get financial advice
-    # or answer user queries related to finance.
+elif menu == "AI Advisor":
+    st.subheader("🤖 AI Financial Advisor")
+    # st.info("This feature is under development. Stay tuned!")
+    render_ai_chat()

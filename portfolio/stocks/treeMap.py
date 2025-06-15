@@ -95,7 +95,7 @@ class treeMap:
             color_continuous_scale=color_scale,
             range_color=[min_return, max_return],
             custom_data=["sector", "amount_invested",
-                        "portfolio_pct", "return_pct"],
+                         "portfolio_pct", "return_pct"],
             title="💼 Portfolio Allocation by Sector and Ticker (Colored by Return %)",
         )
 

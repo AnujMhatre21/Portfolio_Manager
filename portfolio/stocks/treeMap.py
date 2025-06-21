@@ -100,8 +100,8 @@ class treeMap:
         )
 
         if midpoint is not None:
-            fig.update_layout(coloraxis_colorbar=dict(
-                coloraxis_midpoint=midpoint))
+            fig.update_layout(coloraxis=dict(
+                cmid=midpoint))
 
         # Disable default hovertemplate
         fig.update_traces(hovertemplate=None, textfont_size=15)

@@ -513,6 +513,98 @@ Please provide personalized advice based on their specific situation.
     def create_portfolio_visualization(self, portfolio_data):
         """Create comprehensive interactive portfolio visualizations"""
         if not portfolio_data['holdings']:
+            with st.expander("➕ Add New Stock"):
+
+                    # Initialize session state for form inputs if not already present
+                    if "broughtAtPrice" not in st.session_state:
+                        st.session_state.broughtAtPrice = 0.0
+                    if "qty" not in st.session_state:
+                        st.session_state.qty = 0
+                    if "buy_date" not in st.session_state:
+                        st.session_state.buy_date = pd.to_datetime("today")
+                    if "typ" not in st.session_state:
+                        st.session_state.typ = "Stock"
+
+                    query = st.text_input(
+                        "Search for a Ticker (e.g., INFY, TCS, RELIANCE)")
+
+                    matches = search_ticker_symbols(query) if query else []
+
+                    # Add ".NS" suffix to all NSE symbols to be consistent with yfinance requirements
+                    matches_ns = [
+                        f"{s.split(' - ')[0]}.NS - {s.split(' - ')[1]}" for s in matches]
+
+                    selected = st.selectbox(
+                        "Select Ticker", matches_ns, key="ticker_dropdown") if matches_ns else None
+
+                    if selected:
+                        ticker = selected.split(" - ")[0]  # e.g. "INFY.NS"
+                        ticker_name = selected.split(" - ")[1]
+                    else:
+                        ticker = ""
+                        ticker_name = ""
+
+                    current_price = 0.0
+                    name = ""
+                    exch = ""
+                    if ticker:
+                        try:
+                            tk = Ticker(ticker)
+                            info = tk.price.get(ticker, {})
+                            name = info.get("shortName", "")
+                            current_price = info.get("regularMarketPrice", 0.0)
+                            exch = info.get("exchangeName", "")
+                            change_pct = info.get("regularMarketChangePercent", 0.0)
+                            change_pct = change_pct * 100
+
+                            # Format percentage with + or - sign and 2 decimals
+                            change_str = f"{change_pct:+.2f}%"
+
+                            st.info(
+                                f"**{name}** ({exch})\n💰 Current Price: ₹{current_price} ({change_str})"
+                            )
+                        except Exception:
+                            st.warning("Could not fetch price info.")
+
+                        with st.form("portfolio", clear_on_submit=False):
+                            broughtAtPrice = st.number_input("Brought at Price", 0.0)
+                            qty = st.number_input("Quantity", 0)
+                            amount = broughtAtPrice * qty
+                            buy_date = st.date_input("Buy Date")
+                            typ = st.selectbox("Type", ["Stock", "Mutual Fund", "ETF"])
+
+                            if typ == "ETF":
+                                sector = "ETF"
+                            if typ == "Mutual Fund":
+                                sector = "Mutual Fund"
+                                # if (sector == " "):
+                                #     sector = "Others"
+
+                            t = yf.Ticker(ticker)
+                            info = t.info
+
+                            quote_type = info.get("quoteType")
+                            long_name = info.get("longName", "").lower()
+                            sector = info.get("sector")
+                            # print(f"Quote Type: {quote_type}")
+                            # print(f"Long Name: {long_name}")
+
+                            if quote_type == "ETF":
+                                sector = "ETF"
+                            if "etf" in long_name:
+                                sector = "ETF"
+
+
+                            if st.form_submit_button("Add") and ticker:
+                                # print(ticker, ticker_name, amount, broughtAtPrice, qty, buy_date, typ, sector, current_price)
+                                engine = AdvancedFinancialAdvisor._get_engine()
+                                conn = engine.raw_connection()
+                                cur = conn.cursor()
+                                cur.execute("INSERT INTO holdings (ticker_symbol, ticker_name, amount_invested, purchase_price, quantity, buy_date, asset_type,sector,LTP) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                                            (ticker, ticker_name, amount, broughtAtPrice, qty, buy_date, typ, sector, current_price))
+                                conn.commit()
+                                conn.close()
+                                st.success("Added")
             st.info(
                 "📊 No investments to visualize yet. Start investing to see your portfolio analytics!")
             return

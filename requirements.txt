@@ -9,3 +9,4 @@ sqlalchemy
 python-dotenv
 numpy
 pymysql
+google-generativeai
